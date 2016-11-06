@@ -7,7 +7,7 @@
  import java.io.InputStream;
  import java.io.OutputStream;
  import java.io.PrintStream;
- 
+ @Deprecated
  public class CopyFolder
  {
    private void copyFolder(File src, File des)

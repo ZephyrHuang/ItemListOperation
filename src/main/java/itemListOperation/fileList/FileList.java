@@ -12,7 +12,7 @@ import java.util.List;
 //import org.apache.commons.collections4.CollectionUtils;
 
 /**
- * FileList对象包含一个目录和该目录下所有的子目录和文件
+ * FileList对象包含一个目录和该目录下所有的子目录（不递归）和文件
  * @author Zephyr Huang
  *
  */
@@ -48,9 +48,9 @@ public class FileList extends AbstractFileList<FileList>{
 	}
 	
 	public FileList(FileList fileList) {
-		this.rootDir = fileList.rootDir;
-		this.subDirList = fileList.subDirList;
-		this.subFileList = fileList.subFileList;
+		this.rootDir = fileList.getRootDir();
+		this.subDirList = fileList.getSubDirList();
+		this.subFileList = fileList.getSubFileList();
 	}
 	
 	/********************copy和check操作********************/
@@ -236,7 +236,7 @@ public class FileList extends AbstractFileList<FileList>{
 	
 	/***********************getters**************************/
 	public File getRootDir() {
-		return rootDir;
+		return this.rootDir;
 	}
 
 	public List<File> getSubFileList() {

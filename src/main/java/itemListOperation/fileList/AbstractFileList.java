@@ -6,7 +6,7 @@ import itemListOperation.ItemList;
  * @author Zephyr Huang
  *
  */
-public abstract class AbstractFileList<T extends ItemList> implements ItemList<T> {
+public abstract class AbstractFileList<T> implements ItemList<T> {
 
 	public abstract boolean copyToAccordingToName(T desItemList);
 

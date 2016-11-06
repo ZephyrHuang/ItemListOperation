@@ -1,6 +1,7 @@
 package itemListOperation.fileList;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -21,7 +22,9 @@ public class TestFileList {
 	public void setUp() {
 		srcDir = new File("E:/src");
 		desDir = new File("E:/des");
-		//若其中一个不是目录
+		srcDir.mkdir();
+		desDir.mkdir();
+		//校验。两者必须都是目录。
 		if(!(srcDir.isDirectory() && desDir.isDirectory())) {
 			Info.error("One or both of the entry dirs are not directories!");
 			return;
@@ -29,6 +32,24 @@ public class TestFileList {
 		
 		srcFileList = new FileList(srcDir);
 		desFileList = new FileList(desDir);
+		
+		//构造src文件夹
+		//子文件
+		FileWriter fw = null;
+		String[] filesIn_srcDir = {
+				"common.txt",
+				"common_blank.txt",
+				"common_diff_content.txt",
+				"src.txt",
+				"src_blank.txt"
+		};
+		for(String fileName: filesIn_srcDir) {
+			new File(srcDir, fileName);
+			//给非空文件写入内容
+			if(!fileName.contains("blank")) {
+				
+			}
+		}
 	}
 	
 	@After
