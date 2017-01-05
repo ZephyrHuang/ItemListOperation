@@ -251,7 +251,7 @@ public class FileList extends AbstractFileList<FileList>{
 	/***************************main**************************/
 	public static void main(String[] args) {
 		FileList srcdir = new FileList("E:\\directory");
-		FileList desdir = new FileList("I:\\电影");
+		FileList desdir = new FileList("G:\\电影");
 		Info.info("main:开始复制文件...");
 		srcdir.copyToAccordingToName(desdir);
 		Info.info("main:文件复制结束.");
