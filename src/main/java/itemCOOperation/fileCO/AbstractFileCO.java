@@ -1,12 +1,12 @@
-package itemListOperation.fileList;
+package itemCOOperation.fileCO;
 
-import itemListOperation.ItemList;
+import itemCOOperation.ItemCO;
 
 /**
  * @author Zephyr Huang
  *
  */
-public abstract class AbstractFileList<T> implements ItemList<T> {
+public abstract class AbstractFileCO<T> implements ItemCO<T> {
 
 	public abstract boolean copyToAccordingToName(T desItemList);
 

@@ -1,10 +1,10 @@
-package itemListOperation.fileList;
+package itemCOOperation.fileCO;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import itemListOperation.commonUtils.Info;
+import itemCOOperation.common.utils.Info;
 
 public class RenameFiles {
 	

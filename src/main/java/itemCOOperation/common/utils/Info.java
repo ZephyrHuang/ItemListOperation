@@ -1,4 +1,4 @@
-package itemListOperation.commonUtils;
+package itemCOOperation.common.utils;
 
 public class Info {
 	public static void info(String s) {

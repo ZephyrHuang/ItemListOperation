@@ -1,13 +1,13 @@
-package itemListOperation.fileList;
-
-import itemListOperation.commonUtils.CopyTo;
-import itemListOperation.commonUtils.Info;
+package itemCOOperation.fileCO;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import itemCOOperation.common.constants.CommonCons;
+import itemCOOperation.common.utils.CopyTo;
+import itemCOOperation.common.utils.Info;
 
 //import org.apache.commons.collections4.CollectionUtils;
 
@@ -16,7 +16,7 @@ import java.util.List;
  * @author Zephyr Huang
  *
  */
-public class FileList extends AbstractFileList<FileList>{
+public class FileCO extends AbstractFileCO<FileCO>{
 	//根目录文件
 	private File rootDir = null;
 	//根目录下的文件列表
@@ -25,14 +25,14 @@ public class FileList extends AbstractFileList<FileList>{
 	private List<File> subDirList = new ArrayList<File>();
 	
 	/*****************constructors******************/
-	public FileList(String path) {
+	public FileCO(String path) {
 		this(new File(path));
 	}
 	
-	public FileList(File rootDir) {
+	public FileCO(File rootDir) {
 		//必须传入一个目录
 		if(!rootDir.isDirectory()) {
-			Info.error("A directory is requried. "+rootDir.getAbsolutePath());
+			Info.error(CommonCons.A_DIRECTORY_NEEDED + rootDir.getAbsolutePath());
 			return;
 		}
 		this.rootDir = rootDir;
@@ -47,9 +47,9 @@ public class FileList extends AbstractFileList<FileList>{
 		}
 	}
 	
-	public FileList(FileList fileList) {
-		this.rootDir = fileList.getRootDir();
-		this.subDirList = fileList.getSubDirList();
+	public FileCO(FileCO fileList) {
+		this.rootDir 	 = fileList.getRootDir();
+		this.subDirList  = fileList.getSubDirList();
 		this.subFileList = fileList.getSubFileList();
 	}
 	
@@ -58,9 +58,13 @@ public class FileList extends AbstractFileList<FileList>{
 	/* 若“文件名不存在”则copy至desItemList，若“文件名存在”则不操作
 	 */
 	@Override
-	public boolean copyToAccordingToName(FileList desFileList) {
-		Info.info("");
-		Info.info("开始对目录内文件进行复制："+this.rootDir.getAbsolutePath()+"-->"+desFileList.getRootDir().getAbsolutePath());
+	public boolean copyToAccordingToName(FileCO desFileList) {
+		Info.info(
+			"\\r\\n开始对目录内文件进行复制：" +
+			this.rootDir.getAbsolutePath() +
+			"-->" +
+			desFileList.getRootDir().getAbsolutePath()
+		);
 		if(!desFileList.getRootDir().exists())
 			desFileList.getRootDir().mkdir();
 		
@@ -84,7 +88,7 @@ public class FileList extends AbstractFileList<FileList>{
 				desSubDir = new File(desFileList.getRootDir(), srcSubDir.getName());
 				desSubDir.mkdir();
 				Info.info("   开始对 "+srcSubDir.getAbsolutePath()+" 进行递归复制。");
-				new FileList(srcSubDir).copyToAccordingToName(new FileList(desSubDir));
+				new FileCO(srcSubDir).copyToAccordingToName(new FileCO(desSubDir));
 			} catch (Exception e) {
 				Info.error("Error occurs while doing recursive copy operation:"+srcSubDir.getAbsolutePath());
 				e.printStackTrace();
@@ -99,14 +103,14 @@ public class FileList extends AbstractFileList<FileList>{
 	/* 若“文件名不存在”则copy自desItemList，若“文件名存在”则不操作
 	 */
 	@Override
-	public boolean copyFromAccordingToName(FileList desFileList) {
-		return new FileList(desFileList).copyToAccordingToName(this);
+	public boolean copyFromAccordingToName(FileCO desFileList) {
+		return new FileCO(desFileList).copyToAccordingToName(this);
 	}
 	
 	/* 生成desItemList及其子文件、子文件夹的目录结构，文件以同名空文件来表示
 	 */
 	@Override
-	public boolean getDirStructure(FileList desFileList) {
+	public boolean getDirStructure(FileCO desFileList) {
 		Info.info("开始复制目录结构  "+this.rootDir.getAbsolutePath()+"<--"+desFileList.getRootDir().getAbsolutePath());
 		this.rootDir.mkdir();
 		File tempFile = null;
@@ -177,7 +181,7 @@ public class FileList extends AbstractFileList<FileList>{
 		for(File srcSubDir: subDirList) {
 			tempFile = new File(desFileList.getRootDir(), srcSubDir.getName());
 			tempFile.mkdir();
-			new FileList(srcSubDir).getDirStructure(new FileList(tempFile));
+			new FileCO(srcSubDir).getDirStructure(new FileCO(tempFile));
 		}
 		
 		return true;
@@ -188,7 +192,7 @@ public class FileList extends AbstractFileList<FileList>{
 //	 * @param desFileList
 //	 * @return
 //	 */
-//	public boolean copyToAccordingToNameNoRecursive(ItemList desFileList) {
+//	public boolean copyToAccordingToNameNoRecursive(ItemCO desFileList) {
 //		return false;
 //	}
 //	
@@ -197,7 +201,7 @@ public class FileList extends AbstractFileList<FileList>{
 //	 * @param desFileList
 //	 * @return
 //	 */
-//	public boolean copyFromAccordingToNameNoRecursive(ItemList desFileList) {
+//	public boolean copyFromAccordingToNameNoRecursive(ItemCO desFileList) {
 //		return false;
 //	}
 	
@@ -250,8 +254,8 @@ public class FileList extends AbstractFileList<FileList>{
 	
 	/***************************main**************************/
 	public static void main(String[] args) {
-		FileList srcdir = new FileList("E:\\directory");
-		FileList desdir = new FileList("G:\\电影");
+		FileCO srcdir = new FileCO("E:\\directory");
+		FileCO desdir = new FileCO("G:\\电影");
 		Info.info("main:开始复制文件...");
 		srcdir.copyToAccordingToName(desdir);
 		Info.info("main:文件复制结束.");

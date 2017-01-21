@@ -1,10 +1,10 @@
-package itemListOperation;
+package itemCOOperation;
 
 /**
  * item可以是某个目录下的所有文件、文本中特定内容组成的List等等
  * @author Zephyr Huang 
  */
-public interface ItemList<T> {
+public interface ItemCO<T> {
 	/********************copy操作********************/
 	/**
 	 * 若“文件名不存在”则copy至desItemList，若“文件名存在”则不操作
