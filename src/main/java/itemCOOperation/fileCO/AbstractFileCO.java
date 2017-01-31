@@ -34,5 +34,5 @@ public abstract class AbstractFileCO<T> implements ItemCO<T> {
 		return false;
 	}
 
-	public abstract boolean getDirStructure(T desItemList);
+	public abstract boolean syncDirStructure(T desItemList);
 }
