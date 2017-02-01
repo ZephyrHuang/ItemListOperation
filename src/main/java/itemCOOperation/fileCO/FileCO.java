@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import itemCOOperation.common.constants.CommonCons;
 import itemCOOperation.common.utils.CopyTo;
 import itemCOOperation.common.utils.Info;
@@ -78,6 +80,7 @@ public class FileCO extends AbstractFileCO<FileCO>{
 			desFile = new File(desFileCO.getRootDir(), srcFile.getName());
 			Info.info("   开始复制文件：" + srcFile.getAbsolutePath());
 			CopyTo.copyTo(srcFile, desFile);
+			desFileCO.getSubFileList().add(desFile);
 			Info.info("   文件复制结束：" + srcFile.getAbsolutePath());
 		}
 
@@ -116,6 +119,9 @@ public class FileCO extends AbstractFileCO<FileCO>{
 		}
 		return desFileCO.copyToAccordingToName(this);
 	}
+
+	
+	/********************private methods********************/
 	
 	/**
 	 * 同步srcFileCO和desFileCO中的文件和文件夹
@@ -129,32 +135,23 @@ public class FileCO extends AbstractFileCO<FileCO>{
 	 * @param desFileCO
 	 * @return true if succeeded;false otherwise
 	 */
-	@Override
-	public boolean syncDirStructure(FileCO desFileCO) {
+	private boolean syncDirStructure(FileCO desFileCO) {
 		Info.info("开始复制目录结构  " + rootDir.getAbsolutePath() + " <-- " + desFileCO.getRootDir().getAbsolutePath());
 		File tempFile = null;
-		List<File> tmpSubFileList = new LinkedList<File>();
-		List<File> tmpSubDirList  = new LinkedList<File>();
-		tmpSubFileList.addAll(subFileList);
-		tmpSubDirList.addAll(subDirList);
 		
 		//1. 删除被标记文件
-		for(File srcFile : tmpSubFileList) {
+		for(File srcFile : copyOfSubFileList()) {
 			//删除所有被标记(ToBeDeleted)或(Deleted)的文件
 			if(srcFile.getName().startsWith(CommonCons.FILECO_TOBEDELETED) || srcFile.getName().startsWith(CommonCons.FILECO_DELETED)) {
-				if(srcFile.delete()) {
-					subFileList.remove(srcFile);
-				}
+				delete(srcFile);
 			}
 		}
 
 		//2. 删除被标记文件夹
-		for(File srcDir : tmpSubDirList) {
+		for(File srcDir : copyOfSubDirList()) {
 			//删除被标记(Deleted)的文件夹
 			if(srcDir.getName().startsWith(CommonCons.FILECO_DELETED)) {
-				if(srcDir.delete()) {
-					subDirList.remove(srcDir);
-				}
+				delete(srcDir);
 			}
 		}
 
@@ -162,33 +159,25 @@ public class FileCO extends AbstractFileCO<FileCO>{
 		for(File desFile : desFileCO.getSubFileList()) {
 			tempFile = new File(this.rootDir, desFile.getName());
 			if(!tempFile.exists() || !tempFile.isFile()) {
-				try {
-					if(tempFile.createNewFile()) {
-						subFileList.add(tempFile);
-					}
-				} catch (IOException e) {
-					Info.error("创建原本不存在的空文件时出错：" + desFile.getAbsolutePath());
-					return false;
-				}
+				createFile(tempFile);
 			}
 		}
 		for(File desDir : desFileCO.getSubDirList()) {
 			tempFile = new File(this.rootDir, desDir.getName());
 			if(!tempFile.exists() || !tempFile.isDirectory()) {
-				tempFile.mkdir();
-				subDirList.add(tempFile);
+				createDir(tempFile);
 			}
 		}
 		
 		//4. 对文件进行标记
-		for(File srcFile : subFileList) {
+		for(File srcFile : copyOfSubFileList()) {
 			tempFile = new File(desFileCO.getRootDir(), srcFile.getName());
 			if(!tempFile.exists() || !tempFile.isFile()) {
 				if(srcFile.length()==0) {
 					//4.1 若desFile不存在且srcFile大小为0，则标记 (Deleted)
 					//若已被标记，不重复标记
 					if(!srcFile.getName().startsWith(CommonCons.FILECO_DELETED)) {
-						srcFile.renameTo(new File(rootDir, CommonCons.FILECO_DELETED + srcFile.getName()));
+						renameTo(CommonCons.FILECO_DELETED + srcFile.getName(), srcFile);
 					}
 				} else {
 					//4.2 若desFile不存在且srcFile大小不为0，则警告
@@ -198,7 +187,7 @@ public class FileCO extends AbstractFileCO<FileCO>{
 				if(srcFile.length()!=0) {
 					//4.3 若desFile存在且srcFile大小不为0且两者大小相同，则标记(ToBeDeleted)
 					if(srcFile.length() == tempFile.length()) {	
-						srcFile.renameTo(new File(rootDir, CommonCons.FILECO_TOBEDELETED + srcFile.getName()));
+						renameTo(CommonCons.FILECO_TOBEDELETED + srcFile.getName(), srcFile);
 					}
 					//4.4 若desFile存在且srcFile大小不为0且两者大小不同，则警告
 					else {
@@ -212,12 +201,12 @@ public class FileCO extends AbstractFileCO<FileCO>{
 		}
 		
 		//5. 对文件夹进行标记
-		for(File srcDir : subDirList) {
+		for(File srcDir : copyOfSubDirList()) {
 			tempFile = new File(desFileCO.getRootDir(), srcDir.getName());
 			if(!tempFile.exists() || !tempFile.isDirectory()) {
 				//5.1 若desDir不存在且srcDir为空，则标记(Deleted)
 				if(srcDir.length() == 0) {
-					srcDir.renameTo(new File(rootDir, CommonCons.FILECO_DELETED + srcDir.getName()));
+					renameTo(CommonCons.FILECO_DELETED + srcDir.getName(), srcDir);
 				}
 				//5.2 若desDir不存在且srcDir不为空，则不做操作
 			}
@@ -225,8 +214,6 @@ public class FileCO extends AbstractFileCO<FileCO>{
 		
 		return true;
 	}
-	
-	/********************private methods********************/
 
 	/**
 	 * 整理需要复制的文件<br/>
@@ -259,7 +246,122 @@ public class FileCO extends AbstractFileCO<FileCO>{
 		
 		return resultList;
 	}
-
+	
+	/**
+	 * 删除FileCO中的一个文件或文件夹，同步subFileList和subDirList
+	 * @param file
+	 * @return
+	 */
+	private boolean delete(File file) {
+		if(file == null || !file.exists() || (!subFileList.contains(file) && !subDirList.contains(file))) {
+			return false;
+		}
+		if(file.delete()) {
+			if(file.isFile()) {
+				subFileList.remove(file);				
+			} else {
+				subDirList.remove(file);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * 创建新文件，同步subFileList
+	 * @param file
+	 * @return
+	 */
+	private boolean createFile(File file) {
+		if(file == null || subFileList.contains(file)) {
+			return false;
+		}
+		try {
+			if(file.createNewFile()) {
+				subFileList.add(file);
+				return true;
+			}
+		} catch(IOException e) {
+			Info.error("创建原本不存在的空文件时出错：" + file.getAbsolutePath());
+			return false;
+		}
+		return false;
+	}
+	
+	/**
+	 * 创建新文件夹，同步subDirList
+	 * @param file
+	 * @return
+	 */
+	private boolean createDir(File file) {
+		if(file == null || subDirList.contains(file)) {
+			return false;
+		}
+		try {
+			if(file.mkdir()) {
+				subDirList.add(file);
+				return true;
+			}
+		} catch(SecurityException e) {
+			Info.error("创建原本不存在的空文件夹时出错：" + file.getAbsolutePath());
+			return false;
+		}
+		return false;
+	}
+	
+	/**
+	 * 获取当前subFileList的副本。<br/>
+	 * 对subFileList遍历的时候如果同时要对其进行增删操作，则只能遍历其副本。
+	 * @return
+	 */
+	private List<File> copyOfSubFileList() {
+		List<File> result = new LinkedList<File>();
+		if(CollectionUtils.isNotEmpty(subFileList)) {
+			result.addAll(subFileList);
+		}
+		return result;
+	}
+	
+	/**
+	 * 获取当前subDirList的副本。<br/>
+	 * 对subDirList遍历的时候如果同时要对其进行增删操作，则只能遍历其副本。
+	 * @return
+	 */
+	private List<File> copyOfSubDirList() {
+		List<File> result = new LinkedList<File>();
+		if(CollectionUtils.isNotEmpty(subDirList)) {
+			result.addAll(subDirList);
+		}
+		return result;
+	}
+	
+	/**
+	 * 重命名文件/文件夹，同步subFileList和subDirList
+	 * @param newName 新文件名/文件夹名
+	 * @param file 待重命名的文件/文件夹
+	 * @return
+	 */
+	private boolean renameTo(String newName, File file) {
+		boolean flag = !file.exists() || (!subFileList.contains(file) && !subDirList.contains(file));
+		if(flag/*!file.exists() || (!subFileList.contains(file) && !subDirList.contains(file))*/) {
+			return false;
+		}
+		try {
+			File newFile = new File(file.getParentFile(), newName);
+			file.renameTo(newFile);
+			if(subFileList.contains(file)) {
+				subFileList.remove(file);
+				subFileList.add(newFile);
+			} else {
+				subDirList.remove(file);
+				subDirList.add(newFile);
+			}
+			return true;
+		} catch (SecurityException e) {
+			return false;
+		}
+	}
 	
 	/********************getters********************/
 	public File getRootDir() {
@@ -286,8 +388,5 @@ public class FileCO extends AbstractFileCO<FileCO>{
 		Info.info("main:开始复制目录结构...");
 		srcdir.syncDirStructure(desdir);
 		Info.info("main:目录结构复制结束.");
-
-//		System.out.println(file1.length());
-
 	}
 }

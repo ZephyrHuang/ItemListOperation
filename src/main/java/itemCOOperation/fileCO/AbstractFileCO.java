@@ -33,6 +33,4 @@ public abstract class AbstractFileCO<T> implements ItemCO<T> {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	public abstract boolean syncDirStructure(T desItemList);
 }

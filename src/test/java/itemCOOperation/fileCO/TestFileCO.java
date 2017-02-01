@@ -128,11 +128,11 @@ public class TestFileCO {
 		};
 		Map<String, String> filesInSrc_subsrc = new HashMap<String, String>() {
 			{
-				put("(ToBeDeleted)common.txt", "common");
 				put("(Deleted)common_blank.txt", "");
-				put("(ToBeDeleted)common_diff.txt", "commonsrc");
-				put("(ToBeDeleted)src.txt", "src");
 				put("(Deleted)src_blank.txt", "");
+				put("(ToBeDeleted)common_diff.txt", "commonsrc");
+				put("(ToBeDeleted)common.txt", "common");
+				put("(ToBeDeleted)src.txt", "src");
 			}
 		};
 		Map<String, String> filesInSrc_subsrc_blank = new HashMap<String, String>() {
@@ -199,10 +199,8 @@ public class TestFileCO {
 		Map<String, String> filesInDes_subsrc = new HashMap<String, String>() {
 			{
 				put("common.txt", "common");
-				put("common_blank.txt", "");
 				put("common_diff.txt", "commonsrc");
 				put("src.txt", "src");
-				put("src_blank.txt", "");
 			}
 		};
 
@@ -255,6 +253,7 @@ public class TestFileCO {
 	//@Test
 	@SuppressWarnings("serial")
 	public void testCopyToAccordingToName_SecondTime() {
+		Info.info();
 		Info.info("==================== 第二遍 ====================");
 		//The method to be tested.
 		srcFileCO.copyToAccordingToName(desFileCO);
@@ -263,12 +262,12 @@ public class TestFileCO {
 		//src文件夹内的所有文件和文件夹
 		Map<String, String> filesInSrc = new HashMap<String, String>() {
 			{
-				put("common.txt", "");
 				put("common_blank.txt", "");
 				put("common_diff.txt", "commonsrc");
-				put("src.txt", "");
-				put("des.txt", "");
+				put("common.txt", "");
 				put("des_blank.txt", "");
+				put("des.txt", "");
+				put("src.txt", "");
 			}
 		};
 		Map<String, String> dirsInSrc = new HashMap<String, String>() {
@@ -361,10 +360,8 @@ public class TestFileCO {
 		Map<String, String> filesInDes_subsrc = new HashMap<String, String>() {
 			{
 				put("common.txt", "common");
-				put("common_blank.txt", "");
 				put("common_diff.txt", "commonsrc");
 				put("src.txt", "src");
-				put("src_blank.txt", "");
 			}
 		};
 
@@ -519,13 +516,19 @@ public class TestFileCO {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		List<File> l = new ArrayList<File>();
-		File f = new File(new File(srcDirPath), "test.txt");
-		f.createNewFile();
-		l.add(f);
-		Info.info(l.get(0).getName());
-		Info.info();
-		Info.info(l.get(0).renameTo(new File(new File(srcDirPath), "alalal.txt")));
-		Info.info(l.get(0).getName());
+		File srcDir = new File(srcDirPath);
+		File desDir = new File(desDirPath);
+		srcDir.mkdir();
+		desDir.mkdir();
+		
+		File src = new File(srcDir, "test.txt");
+		src.createNewFile();
+		FileUtils.writeStringToFile(src, "test");
+		
+		FileCO srcFileCO = new FileCO(srcDir);
+		FileCO desFileCO = new FileCO(desDir);
+		
+		srcFileCO.copyToAccordingToName(desFileCO);
+		Info.info("end");
 	}
 }
