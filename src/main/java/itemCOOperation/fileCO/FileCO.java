@@ -3,6 +3,7 @@ package itemCOOperation.fileCO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import itemCOOperation.common.constants.CommonCons;
 import itemCOOperation.common.utils.CopyTo;
+import itemCOOperation.common.utils.FileUtil;
 import itemCOOperation.common.utils.Info;
 
 //import org.apache.commons.collections4.CollectionUtils;
@@ -20,7 +22,7 @@ import itemCOOperation.common.utils.Info;
  *
  */
 public class FileCO extends AbstractFileCO<FileCO>{
-	//根目录文件
+	//根目录
 	private File rootDir = null;
 	//根目录下的文件列表
 	private List<File> subFileList = new LinkedList<File>();
@@ -34,9 +36,11 @@ public class FileCO extends AbstractFileCO<FileCO>{
 	
 	public FileCO(File rootDir) {
 		//必须传入一个目录
-		if(!rootDir.isDirectory()) {
+		if(rootDir == null) {
+			throw new NullPointerException("The argument rootDir is null!");
+		} else if(!rootDir.isDirectory()) {
 			Info.error(CommonCons.A_DIRECTORY_NEEDED + rootDir.getAbsolutePath());
-			throw new RuntimeException();
+			throw new RuntimeException(CommonCons.A_DIRECTORY_NEEDED + rootDir.getAbsolutePath());
 		}
 		this.rootDir = rootDir;
 		File tempFile = null;
@@ -205,7 +209,7 @@ public class FileCO extends AbstractFileCO<FileCO>{
 			tempFile = new File(desFileCO.getRootDir(), srcDir.getName());
 			if(!tempFile.exists() || !tempFile.isDirectory()) {
 				//5.1 若desDir不存在且srcDir为空，则标记(Deleted)
-				if(srcDir.length() == 0) {
+				if(FileUtil.isDirEmpty(srcDir)) {
 					renameTo(CommonCons.FILECO_DELETED + srcDir.getName(), srcDir);
 				}
 				//5.2 若desDir不存在且srcDir不为空，则不做操作
@@ -344,7 +348,7 @@ public class FileCO extends AbstractFileCO<FileCO>{
 	 */
 	private boolean renameTo(String newName, File file) {
 		boolean flag = !file.exists() || (!subFileList.contains(file) && !subDirList.contains(file));
-		if(flag/*!file.exists() || (!subFileList.contains(file) && !subDirList.contains(file))*/) {
+		if(flag) {
 			return false;
 		}
 		try {
@@ -381,12 +385,8 @@ public class FileCO extends AbstractFileCO<FileCO>{
 	public static void main(String[] args) {
 		FileCO srcdir = new FileCO("E:\\directory");
 		FileCO desdir = new FileCO("G:\\电影");
-		Info.info("main:开始复制文件...");
+		Info.info("#################################### 开始 ####################################");
 		srcdir.copyToAccordingToName(desdir);
-		Info.info("main:文件复制结束.");
-		Info.info("");
-		Info.info("main:开始复制目录结构...");
-		srcdir.syncDirStructure(desdir);
-		Info.info("main:目录结构复制结束.");
+		Info.info("#################################### 结束 ####################################");
 	}
 }

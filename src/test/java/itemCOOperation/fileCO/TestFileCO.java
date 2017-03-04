@@ -1,6 +1,7 @@
 package itemCOOperation.fileCO;
 
 import static org.junit.Assert.*;
+import static itemCOOperation.common.utils.Info.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,31 +19,31 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import itemCOOperation.common.utils.Info;
 
 
 public class TestFileCO {
-	private File srcDir;
-	private File desDir;
-	private FileCO srcFileCO;
-	private FileCO desFileCO;
+	private static File srcDir;
+	private static File desDir;
+	private static FileCO srcFileCO;
+	private static FileCO desFileCO;
 	//本源入口目录路径
 	private static String srcDirPath = "C:/Users/Zhefeng/workspaces/Main_workspace/ItemListOperation/src/test/resources/src";
 	//目标入口目录路径
 	private static String desDirPath = "C:/Users/Zhefeng/workspaces/Main_workspace/ItemListOperation/src/test/resources/des";
 	
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void setUp() throws Exception {
 		srcDir = new File(srcDirPath);
 		desDir = new File(desDirPath);
 		srcDir.mkdir();
 		desDir.mkdir();
 		//1. 校验。两者必须都是目录。
 		if(!(srcDir.isDirectory() && desDir.isDirectory())) {
-			Info.error("One or both of the entry dirs are not directories!");
+			error("One or both of the entry dirs are not directories!");
 			return;
 		}
 
@@ -74,18 +75,18 @@ public class TestFileCO {
 		desFileCO = new FileCO(desDir);
 	}
 	
-	@After
-	public void tearDown() {
-		Info.info("Tests end.");
+	@AfterClass
+	public static void tearDown() {
+		info("Tests end.");
 	}
 	
 	/**
 	 * 第一次运行
 	 */
-	@Test
 	@SuppressWarnings("serial")
+	@Test
 	public void testCopyToAccordingToName_FirstTime() {
-		Info.info("==================== 第一遍 ====================");
+		info("==================== 第一遍 ====================");
 		//The method to be tested.
 		srcFileCO.copyToAccordingToName(desFileCO);
 		
@@ -226,22 +227,22 @@ public class TestFileCO {
 		}
 		File tmp = null;
 		//src
-		checkFilesAndContents(srcDir, filesInSrc, actualFileInSrc);
-		checkFilesAndContents(srcDir, dirsInSrc , actualDirInSrc);
-		checkFilesAndContents(tmp = new File(srcDir, "common"), 	  filesInSrc_common, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(srcDir, "common_blank"), filesInSrc_common_blank, new ArrayList<File>());
-		checkFilesAndContents(tmp = new File(srcDir, "subsrc"), 	  filesInSrc_subsrc, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(srcDir, "(Deleted)subsrc_blank"), filesInSrc_subsrc_blank, new ArrayList<File>());
-		checkFilesAndContents(tmp = new File(srcDir, "subdes"), 	  filesInSrc_subdes, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(srcDir, "subdes_blank"), filesInSrc_subdes_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(srcDir, filesInSrc, actualFileInSrc);
+		assertFilesMeetRequirements(srcDir, dirsInSrc , actualDirInSrc);
+		assertFilesMeetRequirements(tmp = new File(srcDir, "common"), 	  filesInSrc_common, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(srcDir, "common_blank"), filesInSrc_common_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(tmp = new File(srcDir, "subsrc"), 	  filesInSrc_subsrc, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(srcDir, "(Deleted)subsrc_blank"), filesInSrc_subsrc_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(tmp = new File(srcDir, "subdes"), 	  filesInSrc_subdes, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(srcDir, "subdes_blank"), filesInSrc_subdes_blank, new ArrayList<File>());
 		//des
-		checkFilesAndContents(desDir, filesInDes, actualFileInDes);
-		checkFilesAndContents(desDir, dirsInDes , actualDirInDes);
-		checkFilesAndContents(tmp = new File(desDir, "common"), 	  filesInDes_common, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(desDir, "common_blank"), filesInDes_common_blank, new ArrayList<File>());
-		checkFilesAndContents(tmp = new File(desDir, "subsrc"), 	  filesInDes_subsrc, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(desDir, "subdes"), 	  filesInDes_subdes, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(desDir, "subdes_blank"), filesInDes_subdes_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(desDir, filesInDes, actualFileInDes);
+		assertFilesMeetRequirements(desDir, dirsInDes , actualDirInDes);
+		assertFilesMeetRequirements(tmp = new File(desDir, "common"), 	  filesInDes_common, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(desDir, "common_blank"), filesInDes_common_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(tmp = new File(desDir, "subsrc"), 	  filesInDes_subsrc, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(desDir, "subdes"), 	  filesInDes_subdes, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(desDir, "subdes_blank"), filesInDes_subdes_blank, new ArrayList<File>());
 		
 		//测试第二次运行
 		testCopyToAccordingToName_SecondTime();
@@ -253,8 +254,8 @@ public class TestFileCO {
 	//@Test
 	@SuppressWarnings("serial")
 	public void testCopyToAccordingToName_SecondTime() {
-		Info.info();
-		Info.info("==================== 第二遍 ====================");
+		info();
+		info("==================== 第二遍 ====================");
 		//The method to be tested.
 		srcFileCO.copyToAccordingToName(desFileCO);
 		
@@ -387,21 +388,21 @@ public class TestFileCO {
 		}
 		File tmp = null;
 		//src
-		checkFilesAndContents(srcDir, filesInSrc, actualFileInSrc);
-		checkFilesAndContents(srcDir, dirsInSrc , actualDirInSrc);
-		checkFilesAndContents(tmp = new File(srcDir, "common"), 	  filesInSrc_common, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(srcDir, "common_blank"), filesInSrc_common_blank, new ArrayList<File>());
-		checkFilesAndContents(tmp = new File(srcDir, "subsrc"), 	  filesInSrc_subsrc, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(srcDir, "subdes"), 	  filesInSrc_subdes, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(srcDir, "subdes_blank"), filesInSrc_subdes_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(srcDir, filesInSrc, actualFileInSrc);
+		assertFilesMeetRequirements(srcDir, dirsInSrc , actualDirInSrc);
+		assertFilesMeetRequirements(tmp = new File(srcDir, "common"), 	  filesInSrc_common, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(srcDir, "common_blank"), filesInSrc_common_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(tmp = new File(srcDir, "subsrc"), 	  filesInSrc_subsrc, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(srcDir, "subdes"), 	  filesInSrc_subdes, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(srcDir, "subdes_blank"), filesInSrc_subdes_blank, new ArrayList<File>());
 		//des
-		checkFilesAndContents(desDir, filesInDes, actualFileInDes);
-		checkFilesAndContents(desDir, dirsInDes , actualDirInDes);
-		checkFilesAndContents(tmp = new File(desDir, "common"), 	  filesInDes_common, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(desDir, "common_blank"), filesInDes_common_blank, new ArrayList<File>());
-		checkFilesAndContents(tmp = new File(desDir, "subsrc"), 	  filesInDes_subsrc, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(desDir, "subdes"), 	  filesInDes_subdes, 	   Arrays.asList(tmp.listFiles()));
-		checkFilesAndContents(tmp = new File(desDir, "subdes_blank"), filesInDes_subdes_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(desDir, filesInDes, actualFileInDes);
+		assertFilesMeetRequirements(desDir, dirsInDes , actualDirInDes);
+		assertFilesMeetRequirements(tmp = new File(desDir, "common"), 	  filesInDes_common, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(desDir, "common_blank"), filesInDes_common_blank, new ArrayList<File>());
+		assertFilesMeetRequirements(tmp = new File(desDir, "subsrc"), 	  filesInDes_subsrc, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(desDir, "subdes"), 	  filesInDes_subdes, 	   Arrays.asList(tmp.listFiles()));
+		assertFilesMeetRequirements(tmp = new File(desDir, "subdes_blank"), filesInDes_subdes_blank, new ArrayList<File>());
 	}
 	
 	/**
@@ -411,14 +412,14 @@ public class TestFileCO {
 	 * @return
 	 * @throws IOException 
 	 */
-	private void createFiles(File dir, String srcOrDes) throws Exception {
+	private static void createFiles(File dir, String srcOrDes) throws Exception {
 		if(dir == null || StringUtils.isBlank(srcOrDes)) {
 			throw new RuntimeException();
 		}
 		dir.mkdir();
 		if(!dir.isDirectory()) {
-			Info.error("When creating file:"+dir.getAbsolutePath());
-			Info.error(dir.getAbsolutePath()+"is not a directory！");
+			error("When creating file:"+dir.getAbsolutePath());
+			error(dir.getAbsolutePath()+"is not a directory！");
 			throw new IOException();
 		}
 		if(dir.getName().contains("blank")) {
@@ -446,7 +447,7 @@ public class TestFileCO {
 				bw.flush();
 				bw.close();
 			} catch (IOException e) {
-				Info.error("Error occurs when creating file: "+tmpFile.getAbsolutePath());
+				error("Error occurs when creating file: "+tmpFile.getAbsolutePath());
 				throw e;
 			}
 		}
@@ -462,7 +463,7 @@ public class TestFileCO {
 	 * @param actualFiles 实际存在的文件
 	 * @return true if the check is passed;false otherwise
 	 */
-	private void checkFilesAndContents(File rootDir, Map<String, String> filesAndContents, List<File> actualFiles) {
+	private void assertFilesMeetRequirements(File rootDir, Map<String, String> filesAndContents, List<File> actualFiles) {
 		String fileOrDir = " 空文件夹 ";//标识所检查的是空文件夹/文件列表/文件夹列表
 		if(CollectionUtils.isNotEmpty(actualFiles)) {
 			if(actualFiles.get(0).isFile()) {
@@ -516,19 +517,20 @@ public class TestFileCO {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		File srcDir = new File(srcDirPath);
-		File desDir = new File(desDirPath);
-		srcDir.mkdir();
-		desDir.mkdir();
-		
-		File src = new File(srcDir, "test.txt");
-		src.createNewFile();
-		FileUtils.writeStringToFile(src, "test");
-		
-		FileCO srcFileCO = new FileCO(srcDir);
-		FileCO desFileCO = new FileCO(desDir);
-		
-		srcFileCO.copyToAccordingToName(desFileCO);
-		Info.info("end");
+//		File srcDir = new File(srcDirPath);
+//		File desDir = new File(desDirPath);
+//		srcDir.mkdir();
+//		desDir.mkdir();
+//		
+//		File src = new File(srcDir, "test.txt");
+//		src.createNewFile();
+//		FileUtils.writeStringToFile(src, "test");
+//		
+//		FileCO srcFileCO = new FileCO(srcDir);
+//		FileCO desFileCO = new FileCO(desDir);
+//		
+//		srcFileCO.copyToAccordingToName(desFileCO);
+//		info("end");
+		info(new File("E:\\directory\\ACTRICE\\(Deleted)(Deleted)奥田咲").length());
 	}
 }
