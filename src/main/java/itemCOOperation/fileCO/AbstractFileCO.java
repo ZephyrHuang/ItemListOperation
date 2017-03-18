@@ -8,29 +8,29 @@ import itemCOOperation.ItemCO;
  */
 public abstract class AbstractFileCO<T> implements ItemCO<T> {
 
-	public abstract boolean copyToAccordingToName(T desItemList);
+  public abstract boolean copyToAccordingToName(T desItemList);
 
-	public abstract boolean copyFromAccordingToName(T desItemList);
+  public abstract boolean copyFromAccordingToName(T desItemList);
 
-	public boolean copyToAccordingToContent(T desItemList) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  public boolean copyToAccordingToContent(T desItemList) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	public boolean copyFromAccordingToContent(T desItemList) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  public boolean copyFromAccordingToContent(T desItemList) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	public boolean copyToAccordingToLastModifiedTime(T desItemList,
-			String whichToRetain) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  public boolean copyToAccordingToLastModifiedTime(T desItemList,
+      String whichToRetain) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
-	public boolean copyFromAccordingToLastModifiedTime(T desItemList,
-			String whichToRetain) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  public boolean copyFromAccordingToLastModifiedTime(T desItemList,
+      String whichToRetain) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }
